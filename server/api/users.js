@@ -1,5 +1,6 @@
 const Router = require('express').Router();
 
+const Validation = require("../helpers/validationHelper")
 const UsersHelper = require('../helpers/usersHelper');
 const GeneralHelper = require('../helpers/generalHelper')
 
@@ -8,41 +9,67 @@ const fileName = 'server/api/users.js'
 const list = async (request, reply) => {
     try {
         const response = await UsersHelper.getUsersList();
-        // console.log(JSON.parse(response), '<<<<<<< RES USERS')
 
-        return reply.send(JSON.parse(response))
+        return reply
+            .status(200)
+            .send({
+                message: 'Get User List Success',
+                data: JSON.parse(response)
+            })
     } catch (error) {
-        // console.log([fileName, 'list', 'ERROR'], { info: `${error}` }, '<<<<<<<<<<<<<<< ERR USERS');
 
-        return reply.send(GeneralHelper.errorResponse(error))
+        return reply
+            .status(400)
+            .send(GeneralHelper.errorResponse(error))
     }
 }
 
 const add = async (request, reply) => {
     try {
+        Validation.usersAddValidation(request.body)
+
         const { name, age, city } = request.body
 
         const response = await UsersHelper.addUsers({ name, age, city })
 
-        // console.log(response, '<<<<<<<<<< RESPONSE USER')
-        return reply.send(response)
+        return reply
+            .status(201)
+            .send({
+                message: 'Add User Success',
+                data: response
+            })
     } catch (error) {
-        console.log(error)
-        return reply.send(GeneralHelper.errorResponse(error))
+
+        return reply
+            .status(400)
+            .send({
+                message: error.details[0].message
+            })
     }
 }
 
 const update = async (request, reply) => {
     try {
+
+
         const { id } = request.params
         const { name, age, city } = request.body
 
         const response = await UsersHelper.updateUsers({ id, name, age, city })
 
-        return reply.send(JSON.parse(response))
+        return reply
+            .status(201)
+            .send({
+                message: 'Update User Success',
+                data: JSON.parse(response)
+            })
     } catch (error) {
-        console.log(error)
-        // return reply.send(GeneralHelper.errorResponse(error))
+
+        return reply
+            .status(400)
+            .send({
+                message: error.message
+            })
     }
 }
 
@@ -52,10 +79,19 @@ const deleteUser = async (request, reply) => {
 
         const response = await UsersHelper.deleteUser({ id })
 
-        return reply.send(JSON.parse(response))
+        return reply
+            .status(200)
+            .send({
+                message: 'Delete User Success',
+                data: JSON.parse(response)
+            })
     } catch (error) {
-        console.log(error)
-        return reply.send(GeneralHelper.errorResponse(error))
+
+        return reply
+            .status(400)
+            .send({
+                message: error.message
+            })
     }
 }
 

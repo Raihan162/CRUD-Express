@@ -11,6 +11,21 @@ const pokemonListValidation = (data) => {
   }
 };
 
+const usersAddValidation = (data) => {
+
+  const schema = Joi.object({
+    name: Joi.string().required(),
+    age: Joi.number().required(),
+    city: Joi.string().required()
+  })
+
+  if (schema.validate(data).error) {
+    throw Boom.badRequest(schema.validate(data).error);
+  }
+}
+
+
 module.exports = {
-  pokemonListValidation
+  pokemonListValidation,
+  usersAddValidation
 };
